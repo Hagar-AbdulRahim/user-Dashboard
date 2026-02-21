@@ -1,0 +1,37 @@
+*{font-family: Lucida Calligraphy, sans-serif;}
+.nav_bar{
+    background-color: rgb(55, 5, 99);
+    color: white;
+    font-size: 22px;
+    
+}
+ul li a{
+    text-decoration: none;
+}
+.login_info{
+    background-color: rgb(87, 38, 133);
+    text-align: center;
+    width :30vw;
+     margin-top:90px ;
+     padding: 50px  00px;
+
+    
+
+}
+input{
+    border-radius: 15px;
+    width:200px;
+    height: 40px;
+    border: 1px solid rgb(53, 4, 68);
+ 
+}
+input[type="submit"]{
+    color: rgb(87, 38, 133);
+    background-color: white;
+    font-weight: bolder;
+}
+label{
+    font-size: 19px;
+    font-weight: bold; 
+color: white;
+}

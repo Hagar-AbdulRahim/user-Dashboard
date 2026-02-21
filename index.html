@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+<body class="bg-gray-100">
+
+  <!-- NAVBAR -->
+  <nav class="bg-white shadow-lg p-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-blue-600">Dashboard</h1>
+
+    <button id="logoutBtn" 
+            class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+      Logout
+    </button>
+  </nav>
+
+  <!-- PAGE CONTENT -->
+  <div class="container mx-auto mt-8">
+
+    <!-- Add User Button -->
+    <button class="clickToadduser px-5 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700">
+      Add User
+    </button>
+
+    <!-- USERS TABLE -->
+    <table id="dashboard" class="w-full mt-6 bg-white shadow-lg rounded-lg overflow-hidden">
+      <thead class="bg-blue-500 text-white text-lg">
+        <tr>
+          <th class="p-3">ID</th>
+          <th class="p-3">Name</th>
+          <th class="p-3">Email</th>
+          <th class="p-3">Username</th>
+          <th class="p-3">Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+
+  <!-- ADD USER FORM POPUP -->
+  <div id="addForm" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+      <h2 class="text-xl font-bold mb-4">Add New User</h2>
+
+      <input type="text" class="name w-full p-2 border rounded mb-3" placeholder="Name">
+      <input type="email" class="email w-full p-2 border rounded mb-3" placeholder="Email">
+      <input type="text" class="username w-full p-2 border rounded mb-3" placeholder="Username">
+
+      <div class="flex justify-between mt-4">
+        <button class="send px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Add</button>
+        <button class="cancel px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MORE POPUP -->
+  <div id="userPopup" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
+    <div class="bg-white w-96 p-6 rounded-lg shadow-lg">
+      <h2 class="text-xl font-semibold mb-4">User Details</h2>
+
+      <p id="popupName"></p>
+      <p id="popupEmail"></p>
+      <p id="popupUsername"></p>
+      <p id="popupPhone"></p>
+      <p id="popupWebsite"></p>
+      <p id="popupAddressCity"></p>
+      <p id="popupAddressStreet"></p>
+      <p id="popupCompany"></p>
+      <p id="popupCompanyCatch"></p>
+
+      <button id="closePopup" 
+              class="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+        Close
+      </button>
+    </div>
+  </div>
+
+  <!-- java script -->
+  <script>
+    async function loadDashboard() {
+      try {
+        let response = await fetch("https://jsonplaceholder.typicode.com/users");
+        let responseData = await response.json();
+
+        let tbody = document.querySelector("#dashboard tbody");
+        tbody.innerHTML = "";
+
+        responseData.forEach(item => {
+          let row = document.createElement("tr");
+          row.classList.add("border-b", "hover:bg-gray-100");
+
+          row.innerHTML = `
+            <td class="p-3">${item.id}</td>
+            <td class="p-3">${item.name}</td>
+            <td class="p-3">${item.email}</td>
+            <td class="p-3">${item.username}</td>
+            <td class="p-3">
+              <button class="More px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600">More</button>
+            </td>
+          `;
+
+          tbody.appendChild(row);
+
+          row.querySelector(".More").addEventListener("click", () => showUserPopup(item));
+        });
+      } catch (e) {
+        console.log("ERROR:", e);
+      }
+    }
+
+    function showUserPopup(user) {
+      document.getElementById("popupName").textContent = "Name: " + user.name;
+      document.getElementById("popupEmail").textContent = "Email: " + user.email;
+      document.getElementById("popupUsername").textContent = "Username: " + user.username;
+
+      document.getElementById("userPopup").classList.remove("hidden");
+    }
+
+    document.getElementById("closePopup").addEventListener("click", () => {
+      document.getElementById("userPopup").classList.add("hidden");
+    });
+
+
+    // Add User button → show form
+    document.querySelector(".clickToadduser").addEventListener("click", () => {
+      document.getElementById("addForm").classList.remove("hidden");
+    });
+
+    // Cancel button → hide form
+    document.querySelector(".cancel").addEventListener("click", () => {
+      document.getElementById("addForm").classList.add("hidden");
+    });
+
+    // Add user logic
+    document.querySelector(".send").addEventListener("click", () => {
+      let name = document.querySelector(".name").value;
+      let email = document.querySelector(".email").value;
+      let username = document.querySelector(".username").value;
+
+      if (!name || !email || !username) {
+        alert("Please fill all fields!");
+        return;
+      }
+
+      let tbody = document.querySelector("#dashboard tbody");
+      let row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td class="p-3">New</td>
+        <td class="p-3">${name}</td>
+        <td class="p-3">${email}</td>
+        <td class="p-3">${username}</td>
+        <td class="p-3">
+          <button class="More px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600">More</button>
+        </td>
+      `;
+
+      tbody.appendChild(row);
+
+      document.getElementById("addForm").classList.add("hidden");
+    });
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      alert("Logged out!");
+      window.location.href = "index.html"; 
+    });
+
+    loadDashboard();
+  </script>
+
+</body>
+</html>
